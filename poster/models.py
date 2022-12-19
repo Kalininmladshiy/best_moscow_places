@@ -28,8 +28,6 @@ class Image(models.Model):
     position = models.PositiveIntegerField(
             default=0,
             verbose_name='позиция',
-            blank=False,
-            null=False,
         )
     
     class Meta:
