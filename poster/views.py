@@ -24,11 +24,11 @@ def index(request):
         features.append(feature)
         
 
-    data = {
+    places_on_map = {
         'value': {
           "type": "FeatureCollection",
           "features": features, 
        }
      }
     
-    return render(request, 'index.html', context=data)
+    return render(request, 'index.html', context=places_on_map)
