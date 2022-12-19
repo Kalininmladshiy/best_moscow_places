@@ -3,13 +3,12 @@ from pathlib import Path
 from environs import Env
 
 env = Env()
+env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = env(
-    'DJANGO_KEY',
- )
+SECRET_KEY = env.str('DJANGO_KEY')
 
 DEBUG = env.bool('DEBUG', True)
 
