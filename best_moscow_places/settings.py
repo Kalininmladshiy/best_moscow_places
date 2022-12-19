@@ -9,7 +9,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env(
     'DJANGO_KEY',
-    'django-insecure-o1qmx@a$x=f3qi=ssfgb0!_d3f=6w$sv^8lpbw#gz#p8psnmvy'
  )
 
 DEBUG = env.bool('DEBUG', True)
