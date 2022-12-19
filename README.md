@@ -1,4 +1,4 @@
-# where_to_go
+# best_moscow_places
 Данный репозиторий представляет собой сайт о самых интересных местах в Москве.
 ![image](https://user-images.githubusercontent.com/106922768/205290329-68dca9ac-592c-4c55-a25a-4a547f4cb00c.png)
     
@@ -37,8 +37,6 @@ touch .env
 
 ### 5. Переходим в директорию проекта и выполняем миграции в БД: 
 ```
-python manage.py makemigrations
-
 python manage.py migrate
 ```
 
