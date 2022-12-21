@@ -16,4 +16,7 @@ def get_place(request, place_id):
             }
         }
 
-    return JsonResponse(place_info)
+    return JsonResponse(
+        place_info,
+        json_dumps_params={'ensure_ascii': False, 'indent': 2}
+        )
