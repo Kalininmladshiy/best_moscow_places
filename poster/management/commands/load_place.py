@@ -36,7 +36,7 @@ class Command(BaseCommand):
         path = options['path']
         filenames = get_filenames(path)
         for filename in filenames:
-            with open(os.path.join(path, filename), "r") as file:
+            with open(os.path.join(path, filename), 'r') as file:
                 place_json = file.read()
             place = json.loads(place_json)
             new_place = Place.objects.get_or_create(

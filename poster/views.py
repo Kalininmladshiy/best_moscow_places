@@ -8,23 +8,23 @@ def index(request):
     features = []
     for place in places:
         feature = {
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [place.lng, place.lat]
+          'type': 'Feature',
+          'geometry': {
+            'type': 'Point',
+            'coordinates': [place.lng, place.lat]
           },
-          "properties": {
-            "title": place.title,
-            "placeId": place.id,
-            "detailsUrl": reverse('places', args=[place.id]),
+          'properties': {
+            'title': place.title,
+            'placeId': place.id,
+            'detailsUrl': reverse('places', args=[place.id]),
           }
         }
         features.append(feature)
 
     places_on_map = {
         'value': {
-          "type": "FeatureCollection",
-          "features": features,
+          'type': 'FeatureCollection',
+          'features': features,
             }
         }
 
