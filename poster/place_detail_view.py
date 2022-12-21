@@ -5,10 +5,9 @@ from .models import Place
 
 def get_place(request, place_id):
     place = get_object_or_404(Place, id=place_id)
-    images = place.images.all()
     place_info = {
         'title': place.title,
-        'imgs': [image.picture.url for image in images],
+        'imgs': [image.picture.url for image in place.images.all()],
         'description_short': place.description_short,
         'description_long': place.description_long,
         'coordinates': {
@@ -17,4 +16,4 @@ def get_place(request, place_id):
             }
         }
 
-    return JsonResponse(place_info, content_type='application/json')
+    return JsonResponse(place_info)

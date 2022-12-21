@@ -4,9 +4,8 @@ from django.urls import reverse
 
 
 def index(request):
-    places = Place.objects.all()
     features = []
-    for place in places:
+    for place in Place.objects.all():
         feature = {
           'type': 'Feature',
           'geometry': {
