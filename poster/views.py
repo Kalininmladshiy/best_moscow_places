@@ -1,8 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from .models import Place, Image
+from .models import Place
 from django.urls import reverse
-
 
 
 def index(request):
@@ -22,13 +20,12 @@ def index(request):
           }
         }
         features.append(feature)
-        
 
     places_on_map = {
         'value': {
           "type": "FeatureCollection",
-          "features": features, 
-       }
-     }
-    
+          "features": features,
+            }
+        }
+
     return render(request, 'index.html', context=places_on_map)

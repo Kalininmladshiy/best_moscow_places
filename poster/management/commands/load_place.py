@@ -15,21 +15,22 @@ def get_filenames(path):
             filenames.append(filename)
     return filenames
 
+
 def download_file(path, url):
     response = requests.get(url)
     response.raise_for_status()
     with open(path, 'wb') as file:
-        file.write(response.content)    
-    
+        file.write(response.content)
+
 
 class Command(BaseCommand):
 
     def add_arguments(self, parser):
-            parser.add_argument(
-                '--path',
-                default=Path.cwd() / 'static' / 'places',
-                help='Путь к .json файлу с данными для БД',
-            )    
+        parser.add_argument(
+            '--path',
+            default=Path.cwd() / 'static' / 'places',
+            help='Путь к .json файлу с данными для БД',
+        )
 
     def handle(self, *args, **options):
         path = options['path']
@@ -58,7 +59,11 @@ class Command(BaseCommand):
                     print('Что-то с адресом страницы')
                     continue
                 img = Image()
-                img.picture.save(img_filename, File(open(Path.cwd() / img_filename, 'rb')), save=True)
+                img.picture.save(
+                    img_filename,
+                    File(open(Path.cwd() / img_filename, 'rb')),
+                    save=True
+                 )
                 new_place[0].images.add(img)
                 os.remove(img_filename)
 
