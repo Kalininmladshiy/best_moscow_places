@@ -6,7 +6,7 @@ from adminsortable2.admin import SortableAdminBase, SortableTabularInline
 from adminsortable2.admin import SortableAdminMixin
 
 
-class PlaceimageInline(SortableTabularInline):
+class PlaceImageInline(SortableTabularInline):
     model = Image
     readonly_fields = ('get_preview',)
     fields = ['position', 'picture', 'get_preview']
@@ -25,7 +25,7 @@ class PlaceimageInline(SortableTabularInline):
 class PlaceAdmin(SortableAdminBase, admin.ModelAdmin):
     search_fields = ('title',)
     list_display = ('title', 'description_short')
-    inlines = [PlaceimageInline]
+    inlines = [PlaceImageInline]
 
 
 @admin.register(Image)
