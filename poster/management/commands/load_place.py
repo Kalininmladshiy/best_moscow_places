@@ -24,11 +24,18 @@ def download_file(path, url):
 
 class Command(BaseCommand):
 
+    def add_arguments(self, parser):
+            parser.add_argument(
+                '--path',
+                default=Path.cwd() / 'static' / 'places',
+                help='Путь к .json файлу с данными для БД',
+            )    
+
     def handle(self, *args, **options):
-        path = Path.cwd() / 'static' / 'places'
+        path = options['path']
         filenames = get_filenames(path)
         for filename in filenames:
-            with open(os.path.join(Path.cwd() / 'static' / 'places', filename), "r") as file:
+            with open(os.path.join(path, filename), "r") as file:
                 place_json = file.read()
             place = json.loads(place_json)
             new_place = Place.objects.get_or_create(
