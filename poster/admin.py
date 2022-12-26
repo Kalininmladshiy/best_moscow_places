@@ -12,10 +12,10 @@ class PlaceImageInline(SortableTabularInline):
     fields = ['position', 'picture', 'get_preview']
     extra = 1
 
-    def get_preview(self, place):
+    def get_preview(self, img):
         return format_html(
             '<img src="{url}" height={height} />',
-            url=place.picture.url,
+            url=img.picture.url,
             height=200,
          )
 
