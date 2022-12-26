@@ -21,12 +21,12 @@ class Image(models.Model):
         related_name='images',
         on_delete=models.CASCADE,
         null=True,
-     )
+    )
 
     position = models.PositiveIntegerField(
             default=0,
             verbose_name='позиция',
-        )
+    )
 
     class Meta:
         ordering = ['position']

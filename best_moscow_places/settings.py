@@ -12,8 +12,7 @@ SECRET_KEY = env.str('DJANGO_KEY')
 
 DEBUG = env.bool('DEBUG', True)
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", ('localhost', '127.0.0.1', '0.0.0.0'))
-
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ('localhost', '127.0.0.1', '0.0.0.0'))
 
 
 INSTALLED_APPS = [
@@ -23,7 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'poster',
     'adminsortable2',
     'tinymce',
@@ -91,7 +90,6 @@ TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 
 USE_TZ = True
-
 
 
 STATIC_URL = '/static/'

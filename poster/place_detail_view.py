@@ -13,10 +13,10 @@ def get_place(request, place_id):
         'coordinates': {
             'lat': place.lat,
             'lng': place.lng,
-            }
         }
+    }
 
     return JsonResponse(
         place_info,
         json_dumps_params={'ensure_ascii': False, 'indent': 2}
-        )
+    )
