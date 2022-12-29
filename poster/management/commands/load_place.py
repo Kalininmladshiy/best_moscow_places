@@ -3,7 +3,7 @@ import os
 import time
 import json
 from pathlib import Path
-from django.core.files import File
+from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from poster.models import Place, Image
 
@@ -16,11 +16,10 @@ def get_filenames(path):
     return filenames
 
 
-def download_file(path, url):
+def get_file_content(url):
     response = requests.get(url)
     response.raise_for_status()
-    with open(path, 'wb') as file:
-        file.write(response.content)
+    return response.content
 
 
 def get_json(url):
@@ -31,33 +30,7 @@ def get_json(url):
 
 def upload_from_url(url):
     place = get_json(url)
-    new_place = Place.objects.get_or_create(
-        title=place['title'],
-        description_short=place['description_short'],
-        description_long=place['description_long'],
-        lng=place['coordinates']['lng'],
-        lat=place['coordinates']['lat'],
-     )
-    for num, img in enumerate(place['imgs'], 1):
-        img_filename = f"{num}_{place['title']}.jpg"
-        url = img
-        try:
-            download_file(img_filename, url)
-        except requests.exceptions.ConnectionError:
-            print('Произошел разрыв сетевого соединения. Ожидаем 10 секунд.')
-            time.sleep(10)
-            continue
-        except requests.exceptions.HTTPError:
-            print('Что-то с адресом страницы')
-            continue
-        img = Image()
-        img.picture.save(
-            img_filename,
-            File(open(Path.cwd() / img_filename, 'rb')),
-            save=True
-         )
-        new_place[0].images.add(img)
-        os.remove(img_filename)
+    create_new_place(place)
 
 
 def upload_from_path(path):
@@ -66,33 +39,30 @@ def upload_from_path(path):
         with open(os.path.join(path, filename), 'r') as file:
             place_json = file.read()
         place = json.loads(place_json)
-        new_place = Place.objects.get_or_create(
-            title=place['title'],
-            description_short=place['description_short'],
-            description_long=place['description_long'],
-            lng=place['coordinates']['lng'],
-            lat=place['coordinates']['lat'],
-         )
-        for num, img in enumerate(place['imgs'], 1):
-            img_filename = f"{num}_{place['title']}.jpg"
-            url = img
-            try:
-                download_file(img_filename, url)
-            except requests.exceptions.ConnectionError:
-                print('Произошел разрыв сетевого соединения. Ожидаем 10 секунд.')
-                time.sleep(10)
-                continue
-            except requests.exceptions.HTTPError:
-                print('Что-то с адресом страницы')
-                continue
-            img = Image()
-            img.picture.save(
-                img_filename,
-                File(open(Path.cwd() / img_filename, 'rb')),
-                save=True
-             )
-            new_place[0].images.add(img)
-            os.remove(img_filename)
+        create_new_place(place)
+
+
+def create_new_place(place):
+    new_place = Place.objects.get_or_create(
+        title=place['title'],
+        description_short=place['description_short'],
+        description_long=place['description_long'],
+        lng=place['coordinates']['lng'],
+        lat=place['coordinates']['lat'],
+     )
+    for num, url in enumerate(place['imgs'], 1):
+        img_filename = f"{num}_{place['title']}.jpg"
+        try:
+            img_content = get_file_content(url)
+        except requests.exceptions.ConnectionError:
+            print('Произошел разрыв сетевого соединения. Ожидаем 10 секунд.')
+            time.sleep(10)
+            continue
+        except requests.exceptions.HTTPError:
+            print('Что-то с адресом страницы')
+            continue
+        img = ContentFile(img_content, name=img_filename)
+        new_place[0].images.add(Image.objects.create(picture=img))    
 
 
 class Command(BaseCommand):
