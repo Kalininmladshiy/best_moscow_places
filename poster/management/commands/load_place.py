@@ -29,8 +29,8 @@ def get_json(url):
 
 
 def upload_from_url(url):
-    place = get_json(url)
-    create_new_place(place)
+    place_payload = get_json(url)
+    create_new_place(place_payload)
 
 
 def upload_from_path(path):
@@ -38,20 +38,20 @@ def upload_from_path(path):
     for filename in filenames:
         with open(os.path.join(path, filename), 'r') as file:
             place_json = file.read()
-        place = json.loads(place_json)
-        create_new_place(place)
+        place_payload = json.loads(place_json)
+        create_new_place(place_payload)
 
 
-def create_new_place(place):
-    new_place = Place.objects.get_or_create(
-        title=place['title'],
-        description_short=place['description_short'],
-        description_long=place['description_long'],
-        lng=place['coordinates']['lng'],
-        lat=place['coordinates']['lat'],
+def create_new_place(place_payload):
+    place = Place.objects.get_or_create(
+        title=place_payload['title'],
+        description_short=place_payload['description_short'],
+        description_long=place_payload['description_long'],
+        lng=place_payload['coordinates']['lng'],
+        lat=place_payload['coordinates']['lat'],
      )
-    for num, url in enumerate(place['imgs'], 1):
-        img_filename = f"{num}_{place['title']}.jpg"
+    for num, url in enumerate(place_payload['imgs'], 1):
+        img_filename = f"{num}_{place_payload['title']}.jpg"
         try:
             img_content = get_file_content(url)
         except requests.exceptions.ConnectionError:
@@ -62,7 +62,7 @@ def create_new_place(place):
             print('Что-то с адресом страницы')
             continue
         img = ContentFile(img_content, name=img_filename)
-        new_place[0].images.add(Image.objects.create(picture=img))    
+        place[0].images.add(Image.objects.create(picture=img))    
 
 
 class Command(BaseCommand):
