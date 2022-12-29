@@ -23,6 +23,78 @@ def download_file(path, url):
         file.write(response.content)
 
 
+def get_json(url):
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.json()
+
+
+def upload_from_url(url):
+    place = get_json(url)
+    new_place = Place.objects.get_or_create(
+        title=place['title'],
+        description_short=place['description_short'],
+        description_long=place['description_long'],
+        lng=place['coordinates']['lng'],
+        lat=place['coordinates']['lat'],
+     )
+    for num, img in enumerate(place['imgs'], 1):
+        img_filename = f"{num}_{place['title']}.jpg"
+        url = img
+        try:
+            download_file(img_filename, url)
+        except requests.exceptions.ConnectionError:
+            print('Произошел разрыв сетевого соединения. Ожидаем 10 секунд.')
+            time.sleep(10)
+            continue
+        except requests.exceptions.HTTPError:
+            print('Что-то с адресом страницы')
+            continue
+        img = Image()
+        img.picture.save(
+            img_filename,
+            File(open(Path.cwd() / img_filename, 'rb')),
+            save=True
+         )
+        new_place[0].images.add(img)
+        os.remove(img_filename)
+
+
+def upload_from_path(path):
+    filenames = get_filenames(path)
+    for filename in filenames:
+        with open(os.path.join(path, filename), 'r') as file:
+            place_json = file.read()
+        place = json.loads(place_json)
+        new_place = Place.objects.get_or_create(
+            title=place['title'],
+            description_short=place['description_short'],
+            description_long=place['description_long'],
+            lng=place['coordinates']['lng'],
+            lat=place['coordinates']['lat'],
+         )
+        for num, img in enumerate(place['imgs'], 1):
+            img_filename = f"{num}_{place['title']}.jpg"
+            url = img
+            try:
+                download_file(img_filename, url)
+            except requests.exceptions.ConnectionError:
+                print('Произошел разрыв сетевого соединения. Ожидаем 10 секунд.')
+                time.sleep(10)
+                continue
+            except requests.exceptions.HTTPError:
+                print('Что-то с адресом страницы')
+                continue
+            img = Image()
+            img.picture.save(
+                img_filename,
+                File(open(Path.cwd() / img_filename, 'rb')),
+                save=True
+             )
+            new_place[0].images.add(img)
+            os.remove(img_filename)
+
+
 class Command(BaseCommand):
 
     def add_arguments(self, parser):
@@ -31,41 +103,17 @@ class Command(BaseCommand):
             default=Path.cwd() / 'static' / 'places',
             help='Путь к .json файлу с данными для БД',
         )
+        parser.add_argument(
+            '--url',
+            help='https путь к .json файлу с данными для БД',
+        )
 
     def handle(self, *args, **options):
         path = options['path']
-        filenames = get_filenames(path)
-        for filename in filenames:
-            with open(os.path.join(path, filename), 'r') as file:
-                place_json = file.read()
-            place = json.loads(place_json)
-            new_place = Place.objects.get_or_create(
-                title=place['title'],
-                description_short=place['description_short'],
-                description_long=place['description_long'],
-                lng=place['coordinates']['lng'],
-                lat=place['coordinates']['lat'],
-             )
-            for num, img in enumerate(place['imgs'], 1):
-                img_filename = f"{num}_{place['title']}.jpg"
-                url = img
-                try:
-                    download_file(img_filename, url)
-                except requests.exceptions.ConnectionError:
-                    print('Произошел разрыв сетевого соединения. Ожидаем 10 секунд.')
-                    time.sleep(10)
-                    continue
-                except requests.exceptions.HTTPError:
-                    print('Что-то с адресом страницы')
-                    continue
-                img = Image()
-                img.picture.save(
-                    img_filename,
-                    File(open(Path.cwd() / img_filename, 'rb')),
-                    save=True
-                 )
-                new_place[0].images.add(img)
-                os.remove(img_filename)
+        url = options['url']
+        upload_from_path(path)
+        if url:
+            upload_from_url(url)
 
 
 if __name__ == "__main__":
