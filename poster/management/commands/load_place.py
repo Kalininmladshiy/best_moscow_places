@@ -42,14 +42,9 @@ def upload_from_path(path):
         create_new_place(place_payload)
 
 
-def create_new_place(place_payload):
-    place = Place.objects.get_or_create(
-        title=place_payload['title'],
-        description_short=place_payload['description_short'],
-        description_long=place_payload['description_long'],
-        lng=place_payload['coordinates']['lng'],
-        lat=place_payload['coordinates']['lat'],
-     )
+
+def create_images(place_payload):
+    images = []
     for num, url in enumerate(place_payload['imgs'], 1):
         img_filename = f"{num}_{place_payload['title']}.jpg"
         try:
@@ -58,11 +53,30 @@ def create_new_place(place_payload):
             print('Произошел разрыв сетевого соединения. Ожидаем 10 секунд.')
             time.sleep(10)
             continue
-        except requests.exceptions.HTTPError:
-            print('Что-то с адресом страницы')
+        except requests.exceptions.HTTPError as e:
+            print(e)
             continue
-        img = ContentFile(img_content, name=img_filename)
-        place[0].images.add(Image.objects.create(picture=img))    
+        img = Image.objects.create(
+            picture=ContentFile(img_content, name=img_filename)
+        )
+        images.append(img)
+    return images
+
+
+def create_new_place(place_payload):
+    place, created = Place.objects.get_or_create(
+        title=place_payload['title'],
+        description_short=place_payload['description_short'],
+        description_long=place_payload['description_long'],
+        lng=place_payload['coordinates']['lng'],
+        lat=place_payload['coordinates']['lat'],
+     )
+    if created:
+        images = create_images(place_payload)
+        for img in images:
+            place.images.add(img)
+    else:
+        print('Объект уже создан')
 
 
 class Command(BaseCommand):
