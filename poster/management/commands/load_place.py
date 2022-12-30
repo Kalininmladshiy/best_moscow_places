@@ -42,7 +42,6 @@ def upload_from_path(path):
         create_new_place(place_payload)
 
 
-
 def create_images(place_payload):
     images = []
     for num, url in enumerate(place_payload['imgs'], 1):
@@ -66,10 +65,12 @@ def create_images(place_payload):
 def create_new_place(place_payload):
     place, created = Place.objects.get_or_create(
         title=place_payload['title'],
-        description_short=place_payload['description_short'],
-        description_long=place_payload['description_long'],
-        lng=place_payload['coordinates']['lng'],
-        lat=place_payload['coordinates']['lat'],
+        defaults={
+            'description_short': place_payload['description_short'],
+            'description_long': place_payload['description_long'],
+            'lng': place_payload['coordinates']['lng'],
+            'lat': place_payload['coordinates']['lat'],
+        },
      )
     if created:
         images = create_images(place_payload)
