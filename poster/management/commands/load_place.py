@@ -30,8 +30,7 @@ def upload_from_path(path):
         create_new_place(place_payload)
 
 
-def create_images(place_payload):
-    images = []
+def create_images(place_payload, place):
     for num, url in enumerate(place_payload.get('imgs', ''), 1):
         img_filename = f"{num}_{place_payload['title']}.jpg"
         try:
@@ -46,10 +45,9 @@ def create_images(place_payload):
             print(e)
             continue
         img = Image.objects.create(
-            picture=ContentFile(img_content, name=img_filename)
+            picture=ContentFile(img_content, name=img_filename),
+            place=place,
         )
-        images.append(img)
-    return images
 
 
 def create_new_place(place_payload):
@@ -63,9 +61,7 @@ def create_new_place(place_payload):
         },
     )
     if created:
-        images = create_images(place_payload)
-        for img in images:
-            place.images.add(img)
+        create_images(place_payload, place)
     else:
         print('Объект уже создан')
 
