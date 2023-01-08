@@ -33,19 +33,10 @@ def upload_from_path(path):
 def create_images(place_payload, place):
     for num, url in enumerate(place_payload.get('imgs', ''), 1):
         img_filename = f"{num}_{place_payload['title']}.jpg"
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            img_content = response.content
-        except requests.exceptions.ConnectionError:
-            print('Произошел разрыв сетевого соединения. Ожидаем 10 секунд.')
-            time.sleep(10)
-            continue
-        except requests.exceptions.HTTPError as e:
-            print(e)
-            continue
+        response = requests.get(url)
+        response.raise_for_status()
         img = Image.objects.create(
-            picture=ContentFile(img_content, name=img_filename),
+            picture=ContentFile(response.content, name=img_filename),
             place=place,
         )
 
