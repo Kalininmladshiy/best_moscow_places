@@ -32,7 +32,7 @@ def upload_from_path(path):
 
 def create_images(place_payload):
     images = []
-    for num, url in enumerate(place_payload['imgs'], 1):
+    for num, url in enumerate(place_payload.get('imgs', ''), 1):
         img_filename = f"{num}_{place_payload['title']}.jpg"
         try:
             response = requests.get(url)
@@ -56,8 +56,8 @@ def create_new_place(place_payload):
     place, created = Place.objects.get_or_create(
         title=place_payload['title'],
         defaults={
-            'description_short': place_payload['description_short'],
-            'description_long': place_payload['description_long'],
+            'description_short': place_payload.get('description_short', ''),
+            'description_long': place_payload.get('description_long', ''),
             'lng': place_payload['coordinates']['lng'],
             'lat': place_payload['coordinates']['lat'],
         },
