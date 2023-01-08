@@ -75,7 +75,6 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             '--path',
-            default=Path.cwd() / 'static' / 'places',
             help='Путь к .json файлу с данными для БД',
         )
         parser.add_argument(
@@ -86,7 +85,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         path = options['path']
         url = options['url']
-        upload_from_path(path)
+        if path:
+            upload_from_path(path)
         if url:
             upload_from_url(url)
 
