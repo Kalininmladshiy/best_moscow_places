@@ -71,7 +71,7 @@ def create_new_place(place_payload):
             'lng': place_payload['coordinates']['lng'],
             'lat': place_payload['coordinates']['lat'],
         },
-     )
+    )
     if created:
         images = create_images(place_payload)
         for img in images:
