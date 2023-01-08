@@ -16,21 +16,10 @@ def get_filenames(path):
     return filenames
 
 
-def get_file_content(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    return response.content
-
-
-def get_json(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    return response.json()
-
-
 def upload_from_url(url):
-    place_payload = get_json(url)
-    create_new_place(place_payload)
+    response = requests.get(url)
+    response.raise_for_status()
+    create_new_place(response.json())
 
 
 def upload_from_path(path):
@@ -47,7 +36,9 @@ def create_images(place_payload):
     for num, url in enumerate(place_payload['imgs'], 1):
         img_filename = f"{num}_{place_payload['title']}.jpg"
         try:
-            img_content = get_file_content(url)
+            response = requests.get(url)
+            response.raise_for_status()
+            img_content = response.content
         except requests.exceptions.ConnectionError:
             print('Произошел разрыв сетевого соединения. Ожидаем 10 секунд.')
             time.sleep(10)
