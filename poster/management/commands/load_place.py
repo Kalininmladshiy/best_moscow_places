@@ -26,8 +26,7 @@ def upload_from_path(path):
     filenames = get_filenames(path)
     for filename in filenames:
         with open(os.path.join(path, filename), 'r') as file:
-            place_json = file.read()
-        place_payload = json.loads(place_json)
+            place_payload = json.load(file)
         create_new_place(place_payload)
 
 
