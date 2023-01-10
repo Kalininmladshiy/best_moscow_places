@@ -1,8 +1,6 @@
 import requests
 import os
-import time
 import json
-from pathlib import Path
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from poster.models import Place, Image
@@ -35,7 +33,7 @@ def create_images(place_payload, place):
         img_filename = f"{num}_{place_payload['title']}.jpg"
         response = requests.get(url)
         response.raise_for_status()
-        img = Image.objects.create(
+        Image.objects.create(
             picture=ContentFile(response.content, name=img_filename),
             place=place,
         )
