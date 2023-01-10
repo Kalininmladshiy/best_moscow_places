@@ -29,7 +29,7 @@ def upload_from_path(path):
 
 
 def create_images(place_payload, place):
-    for num, url in enumerate(place_payload.get('imgs', ''), 1):
+    for num, url in enumerate(place_payload.get('imgs', []), 1):
         img_filename = f"{num}_{place_payload['title']}.jpg"
         response = requests.get(url)
         response.raise_for_status()
